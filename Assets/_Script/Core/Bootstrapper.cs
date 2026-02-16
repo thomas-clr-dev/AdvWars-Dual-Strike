@@ -1,15 +1,26 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Boostrapper : MonoBehaviour
+public class Bootstrapper : MonoBehaviour
 {
-    [Header("Configuration")]
-    [SerializeField] public GameObject tilePrefab;
-    [SerializeField] public Transform gridHolder;
+    [Header("Grid Configuration")]
+    public GameObject tilePrefab;
+    public Transform gridHolder;
+
+    [Header("Cameras Configuration")]
+    public List<Camera> availableCameras;
 
     private void Awake()
     {
-        IGridService gridService = new GridService(tilePrefab, gridHolder);
+        Utils.ColorLog("System launching...", "Cyan");
 
+        IGridService gridService = new GridService(tilePrefab, gridHolder);
         ServiceLocator.Register<IGridService>(gridService);
+
+        ICameraService cameraService = new CameraService(availableCameras);
+        ServiceLocator.Register<ICameraService>(cameraService);
+
+        cameraService.InitializeCameras();
     }
 }

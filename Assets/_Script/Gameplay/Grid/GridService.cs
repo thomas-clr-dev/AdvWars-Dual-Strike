@@ -5,42 +5,46 @@ public class GridService : IGridService
 {
     private TileManager[,] _tiles;
     [Header("Grid Settings")]
-    [SerializeField] private int _width = 9;
-    [SerializeField] private int _height = 9;
-    [SerializeField] private float _cellSize = 1.1f;
+    [Min(0)][SerializeField] private int _width = 10;
+    [Min(0)][SerializeField] private int _height = 10;
+    [Min(0)][SerializeField] private float cellSize = 1.1f;
 
     public GridService(GameObject tilePrefab, Transform parentContainer)
     {
         GenerateGrid(tilePrefab, parentContainer);
     }
 
-    private void GenerateGrid(GameObject tilePrefab, Transform parent)
+
+    private void GenerateGrid(GameObject tilePrefab, Transform parentContainer)
     {
         _tiles = new TileManager[_width, _height];
 
         for (int x = 0; x < _width; x++)
         {
-            for (int y = 0; y < _height; y++)
+            for (int y  = 0; y < _height; y++)
             {
-                Vector3 position = new Vector3(x * _cellSize, 0, y * _cellSize);
+                Vector3 position = new Vector3(x * cellSize, 0, y * cellSize);
 
-                GameObject newTileObj = UnityEngine.Object.Instantiate(tilePrefab, position, Quaternion.identity, parent);
+                GameObject newTileObj = UnityEngine.Object.Instantiate(tilePrefab, position, Quaternion.identity, parentContainer);
+
+                newTileObj.transform.parent = parentContainer;
 
                 TileManager tileScript = newTileObj.GetComponent<TileManager>();
-                tileScript.tileCoordinates = new Vector2Int(x, y);
+                tileScript.tileCoordinates = new Vector2Int (x, y);
 
                 _tiles[x, y] = tileScript;
             }
         }
-        Utils.ColorLog("Success of grid generation !", "Green");
+        Utils.ColorLog("Grid generation success !", "green");
     }
 
     public TileManager GetTile(int x, int y)
     {
-        if (x >= 0 && y >= 0 && x <= _width && y <= _height)
+        if (x > 0 && y > 0 && x <  _width && y < _height)
         {
             return _tiles[x, y];
         }
         return null;
     }
+
 }
